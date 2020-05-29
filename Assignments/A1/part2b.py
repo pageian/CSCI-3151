@@ -24,11 +24,6 @@ def plot_confusion_matrix(cm, classes,
 
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        #print("Normalized confusion matrix")
-    #else:
-        #print('Confusion matrix, without normalization')
-
-    #print(cm)
 
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
@@ -104,4 +99,6 @@ if __name__ == "__main__":
 
         plt.figure()
         plot_confusion_matrix(cnf_matrix, classes=["0", "1"], title='Confusion matrix (Max Depth: ' + str(i) + ")")
+        plt.show()
+        plot_confusion_matrix(cnf_matrix, classes=["0", "1"], normalize=True, title='Confusion matrix, Normalized (Max Depth: ' + str(i) + ")")
         plt.show()

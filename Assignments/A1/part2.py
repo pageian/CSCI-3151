@@ -1,23 +1,74 @@
+'''
+    SVM Classifier
+'''
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy import stats
 import pandas as pd
 
-# use seaborn plotting defaults
-import seaborn as sns; sns.set()
-from sklearn.datasets import make_blobs
+import sklearn.svm as svm
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import KFold
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
 
-data_file = pd.read_csv("diabetes.csv", header=None)
-X = data_file.iloc[1:,:8] # Features
-y = data_file.iloc[1:,8] # Target variable
-plt.scatter(X.iloc[:, 0], X.iloc[:, 1], c=y, s=50, cmap='autumn')
-plt.show()
+if __name__ == "__main__":
+    col_names = [
+        'Pregnancies', 
+        'Glucose', 
+        'BllodPressure', 
+        'SkinThickness', 
+        'Insulin', 
+        'BMI',
+        'DiabetesPedigreeFunction',
+        'Age','Outcome'
+    ]
 
-xfit = np.linspace(-1, 3.5)
-plt.scatter(X.iloc[:, 0], X.iloc[:, 1], c=y, s=50, cmap='autumn')
-plt.plot([0.6], [2.1], 'x', color='red', markeredgewidth=2, markersize=10)
+    feature_cols = [
+        'Pregnancies',
+        'Glucose',
+        'BllodPressure',
+        'SkinThickness',
+        'Insulin',
+        'BMI',
+        'DiabetesPedigreeFunction',
+        'Age'
+    ]
+    
+    data_file = pd.read_csv("data-sets/diabetes.csv")
 
-for m, b in [(1, 0.65), (0.5, 1.6), (-0.2, 2.9)]:
-    plt.plot(xfit, m * xfit + b, '-k')
+    print("\n[5-fold Validation Results ###]")
+    X = data_file.iloc[1:,:8] # Features
+    y = data_file.iloc[1:,8] # Target variable
+    #y = y.reshape((len(y),1))
+    fold_accuracies = []
+    kf = KFold(n_splits=5)
+    kf.get_n_splits(X)
+    KFold(n_splits=5, random_state=None, shuffle=False)
 
-plt.xlim(-1, 3.5)
+    for train_index, test_index in kf.split(X):
+        X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+        y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+        # y_train = y_train.reshape(len(y_train), 1)
+
+        # Using pipeline for a quick implementation https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
+        text_clf_svm = Pipeline([('vect', CountVectorizer(lowercase=False)),('tf-idf', TfidfTransformer()),('clf-svm', svm.SVC()),])
+
+        X_train.fillna('0')
+        y_train.fillna('0')
+        print(X_train.dtypes)
+        print(y_train.dtypes)
+        
+        # X_train = X_train.values.astype('unicode')
+        # y_train = y_train.values.astype('unicode')
+        # y_train =y_train.reshape((train_index,1))
+        # y_train =y_train.reshape((train_index,1))
+        # print(y_train.shape)
+        
+        # print(y_train)
+
+
+        text_clf_svm.fit(X_train.to_string(), y_train.to_string())
+
+        predicted_svm = text_clf_svm.predict(X_test)
+        np.mean(predicted_svm == y_test)
+
+    
