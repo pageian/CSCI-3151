@@ -51,6 +51,8 @@ if __name__ == "__main__":
     feature_cols = ['Pregnancies', 'Glucose', 'BllodPressure', 'SkinThickness', 'Insulin', 'BMI',
         'DiabetesPedigreeFunction', 'Age']
     
+    accuracies = []
+    stand_devs = []
     for i in range(2,9):
         print("\n### Max Depth Set To: ", i)
 
@@ -71,7 +73,6 @@ if __name__ == "__main__":
             print("Accuracy: ",metrics.accuracy_score(y_test, y_pred))
             fold_accuracies.append(metrics.accuracy_score(y_test, y_pred))
 
-        print("\nStandard Dev: ", np.std(fold_accuracies))
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=1)
 
         clf = DecisionTreeClassifier(max_depth=i)
@@ -82,8 +83,14 @@ if __name__ == "__main__":
         #Predict the response for test dataset
         y_pred = clf.predict(X_test)
 
+        accuracy = metrics.accuracy_score(y_test, y_pred)
+        stand_dev = np.std(fold_accuracies)
+        accuracies.append(accuracy)
+        stand_devs.append(stand_dev)
+
         print("\n### Overall Results")
-        print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+        print("Accuracy:",accuracy)
+        print("Standard Dev:", stand_dev)
 
         dot_data = io.StringIO()  
         export_graphviz(clf, out_file=dot_data, filled=True, rounded=True,
@@ -102,3 +109,10 @@ if __name__ == "__main__":
         plt.show()
         plot_confusion_matrix(cnf_matrix, classes=["0", "1"], normalize=True, title='Confusion matrix, Normalized (Max Depth: ' + str(i) + ")")
         plt.show()
+
+    plt.title("Accuracy Summary")
+    plt.plot(range(2,9), accuracies, color='blue')
+    plt.show()
+    plt.title("Standard Deviation Summary")
+    plt.plot(range(2,9), stand_devs, color='blue')
+    plt.show()
