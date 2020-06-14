@@ -23,6 +23,12 @@ def log_cross_entropy(z, target):
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
+def net_input(theta, x):
+    return np.dot(x, theta)
+
+def probability(theta, x):
+    return sigmoid(net_input(theta, x))
+
 def graph(data, target):
     for i in range(len(target)):
         if(target.iloc[i] == 0):
@@ -38,8 +44,8 @@ def graph_result(data, target, weight, bias):
         else:
             plt.scatter(data.iloc[i,0], data.iloc[i,1], color='blue')
     #plt.scatter(range(len(data.iloc[:,0])), target, color='red')
-    z = np.dot(data.iloc[:,0], weight[0]) + np.dot(data.iloc[:,1], weight[1]) + bias
-    plt.plot(range(max(data.iloc[:,0])), z, color='green')
+    y = - (bias + np.dot(weight[0], data.iloc[:,0])) / weight[1]
+    plt.plot(data.iloc[:,0], y, color='green')
     plt.show()
 '''
     log regr gradient trainer
