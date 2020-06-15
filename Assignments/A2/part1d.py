@@ -5,7 +5,25 @@ import pandas as pd
 import numpy as np
 import math
 from scipy.stats import pearsonr
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
+
+def sigmoid(x):
+  return 1 / (1 + math.exp(-x))
+
+def graph_result(data, target, model):
+    for i in range(len(target)):
+        if(target.iloc[i] == 0):
+            plt.scatter(data.iloc[i,0], data.iloc[i,1], color='red')
+        else:
+            plt.scatter(data.iloc[i,0], data.iloc[i,1], color='blue')
+    
+    y = - (model.intercept_[0] + np.dot(model.coef_[0][0], data.iloc[:,0])) / model.coef_[0][1]
+    plt.plot(data.iloc[:,0], y, color='green')
+    plt.xlabel(data.columns.values[0])
+    plt.ylabel(data.columns.values[1])
+    plt.show()
 
 '''
     pearson coeff feature selection
@@ -35,6 +53,17 @@ if __name__ == "__main__":
     # get optimal pearson features
     key_features = feature_selection(X_train, y_train)
 
-
     # train model
+    model = LogisticRegression()
+    model.fit(X_train.iloc[:, [key_features[0], key_features[1]]], y_train)
+    
+    # make predictions
+    pred = model.predict(X_test.iloc[:, [key_features[0], key_features[1]]])
+    accuracy = accuracy_score(pred, y_test)
+    weights = model.coef_
+    print(str(weights) + " " + str(model.intercept_))
+    print(accuracy)
+
+    graph_result(X_test.iloc[:, [key_features[0], key_features[1]]], y_test, model)
+
     

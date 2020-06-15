@@ -47,6 +47,7 @@ def graph_result(data, target, weight, bias):
     y = - (bias + np.dot(weight[0], data.iloc[:,0])) / weight[1]
     plt.plot(data.iloc[:,0], y, color='green')
     plt.show()
+    
 '''
     log regr gradient trainer
     returns final input weights
@@ -57,6 +58,7 @@ def LRGradDesc(data, target, data_test, target_test, weight_init, bias_init, lea
     N = len(data.iloc[:,0])
     current_weight = [weight_init, weight_init]
     current_bias = bias_init
+    theta = np.zeros((data.shape[1], 1))
 
     for i in range(max_iter):
         z = np.dot(data.iloc[:,0], current_weight[0]) + np.dot(data.iloc[:,1], current_weight[1]) + current_bias
@@ -101,7 +103,7 @@ if __name__ == "__main__":
     split_index = int(math.floor(len(y) * 0.8))
     X_train, X_test = X.iloc[:split_index], X.iloc[split_index:]
     y_train, y_test = y.iloc[:split_index], y.iloc[split_index:]
-    graph(X_train, y_train)
+    
     # get optimal pearson features
     key_features = feature_selection(X_train, y_train)
 
