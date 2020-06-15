@@ -8,9 +8,9 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "part4.py",
-            "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/Assignments/A1"
+            "program": "part1d.py",
+            "cwd": "${workspaceFolder}/Assignments/A2",
+            "console": "integratedTerminal"
         }
     ]
 }
