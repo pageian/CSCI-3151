@@ -76,18 +76,18 @@ for i in range(1,5):
     poly_reg = PolynomialFeatures(degree=i)
     print("Fitting model to polyreg")
     X_poly = poly_reg.fit_transform(X_train)
+    predict_ = poly_reg.fit_transform(X_test)
 
     pol_reg = LinearRegression()
     print("Fitting Model to linreg")
     pol_reg.fit(X_poly, y_train)
 
-    print("Making prediction")
-    prediction = pol_reg.predict(X_poly)
+    print("Making predictions")
+    prediction = pol_reg.predict(predict_)
 
-    rmse = np.sqrt(mean_squared_error(y_train,prediction))
-    r2 = r2_score(y_train,prediction)
-    print(rmse)
-    print(r2)
+    diff = np.divide(prediction - y_test, y_test)
+    cost = np.sum(diff ** 2) / (2. * len(y_test))
+    print("Final Cost: %.2f" % cost)
 
     # Visualizing the Polymonial Regression results
     def viz_polymonial():
@@ -95,7 +95,7 @@ for i in range(1,5):
         plt.plot(range(len(X_test)), pol_reg.predict(poly_reg.fit_transform(X_test)), color='blue')
         title = 'House Sale Price Estimation (Degree = ' + str(i) + ')'
         plt.title(title)
-        plt.xlabel('House')
+        plt.xlabel('Total Square Feet')
         plt.ylabel('Sale Price')
         plt.show()
         return

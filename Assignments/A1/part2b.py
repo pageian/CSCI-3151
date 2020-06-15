@@ -105,14 +105,16 @@ if __name__ == "__main__":
         cnf_matrix = confusion_matrix(y_test, y_pred)
 
         plt.figure()
-        plot_confusion_matrix(cnf_matrix, classes=["0", "1"], title='Confusion matrix (Max Depth: ' + str(i) + ")")
-        plt.show()
         plot_confusion_matrix(cnf_matrix, classes=["0", "1"], normalize=True, title='Confusion matrix, Normalized (Max Depth: ' + str(i) + ")")
         plt.show()
 
     plt.title("Accuracy Summary")
+    plt.xlabel("Max-Depth")
+    plt.ylabel("Accuracy")
     plt.plot(range(2,9), accuracies, color='blue')
     plt.show()
     plt.title("Standard Deviation Summary")
+    plt.xlabel("Max-Depth")
+    plt.ylabel("Standard Deviation")
     plt.plot(range(2,9), stand_devs, color='blue')
     plt.show()
