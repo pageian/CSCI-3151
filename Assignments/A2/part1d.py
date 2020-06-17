@@ -41,10 +41,10 @@ if __name__ == "__main__":
 
     # get file data
     data_file = pd.read_csv("data-sets/diabetes.csv")
-    X = data_file.iloc[1:,:8] # Features
-    y = data_file.iloc[1:,8] # Target variable
+    shuffled_data = data_file.sample(frac=1)
+    X = shuffled_data.iloc[1:,:8] # Features
+    y = shuffled_data.iloc[1:,8] # Target variable
 
-    # TODO: must be a randomized selection
     # spltting train and test data
     split_index = int(math.floor(len(y) * 0.8))
     X_train, X_test = X.iloc[:split_index], X.iloc[split_index:]
@@ -61,8 +61,8 @@ if __name__ == "__main__":
     pred = model.predict(X_test.iloc[:, [key_features[0], key_features[1]]])
     accuracy = accuracy_score(pred, y_test)
     weights = model.coef_
-    print(str(weights) + " " + str(model.intercept_))
-    print(accuracy)
+    print("Final Weights: " + str(model.intercept_) + ", " + str(weights))
+    print("Final Accuracy: " + str(accuracy))
 
     graph_result(X_test.iloc[:, [key_features[0], key_features[1]]], y_test, model)
 
