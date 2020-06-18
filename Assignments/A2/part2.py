@@ -47,6 +47,13 @@ def trainModel(X_train, y_train, X_val, y_val, hidden_layers = 3, hidden_nodes =
 
 if "__main__" == __name__:
 
+    best_params = {
+        'num_layers': [0, 0],
+        'num_nodes': [0, 0],
+        'learning_rate': [0, 0],
+        'num_epochs': [0, 0]
+    }
+
     # load data
     np_load_old = np.load
     np.load = lambda *a,**k: np_load_old(*a, allow_pickle=True, **k)
@@ -74,26 +81,37 @@ if "__main__" == __name__:
     for hidden_layers in hidden_layer_set:
         acc, acc_val = trainModel(partial_X_train, partial_y_train, X_val, y_val, hidden_layers=hidden_layers)
         hidden_layer_data.append([acc, acc_val])
+        if(best_params['num_layers'][1] < acc_val):
+            best_params['num_layers'] = [hidden_layers, acc_val]
 
     print("Testing hidden layer node count")
     hidden_nodes_data = []
     for hidden_layer_nodes in hidden_nodes_set:
         acc, acc_val = trainModel(partial_X_train, partial_y_train, X_val, y_val, hidden_nodes=hidden_layer_nodes)
         hidden_nodes_data.append([acc, acc_val])
+        if(best_params['num_nodes'][1] < acc_val):
+            best_params['num_nodes'] = [hidden_layer_nodes, acc_val]
 
     print("Testing learning")
     learning_rate_data = []
     for learning_rate in learning_rate_set:
-        cc, acc_val = trainModel(partial_X_train, partial_y_train, X_val, y_val, learning_rate=learning_rate)
+        acc, acc_val = trainModel(partial_X_train, partial_y_train, X_val, y_val, learning_rate=learning_rate)
         learning_rate_data.append([acc, acc_val])   
+        if(best_params['learning_rate'][1] < acc_val):
+            best_params['learning_rate'] = [learning_rate, acc_val]
 
     print("Testing max epoch")
     epochs_data =[]
     for num_epochs in epochs_set:
         acc, acc_val = trainModel(partial_X_train, partial_y_train, X_val, y_val, epochs=num_epochs)
         epochs_data.append([acc, acc_val])
+        if(best_params['num_epochs'][1] < acc_val):
+            best_params['num_epochs'] = [num_epochs, acc_val]
 
     graphData(hidden_layer_set, hidden_layer_data, '# hidden layers')
     graphData(hidden_nodes_set, hidden_nodes_data, '# nodes in hidden layers')
     graphData(learning_rate_set, learning_rate_data, 'Learning rate')
     graphData(epochs_set, epochs_data, 'epochs')
+
+    print("### BEST PARAMS ###")
+    print(best_params)
