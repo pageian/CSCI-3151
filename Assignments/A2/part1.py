@@ -10,24 +10,14 @@ import matplotlib.pyplot as plt
 def validate(data, target, weight, bias):
     z = np.dot(data.iloc[:,0], weight[0]) + np.dot(data.iloc[:,1], weight[1]) + bias
     pred = sigmoid(z)
-
     accuracy = 1 - (np.sum(abs(pred - target)) / len(data.iloc[:,0]))
     return accuracy
 
 def cross_entropy(prediction, target):
-    return np.subtract(np.dot(-target, np.log(prediction)), np.dot(np.subtract(1, target), np.log(np.subtract(1, prediction))))
-
-def log_cross_entropy(z, target):
-    return np.dot(target, np.log(1 + math.e ** (-z))) + np.dot(1 - target, np.log(1 + math.e ** (-z)))
+    return np.dot(-target, np.log(prediction)) - np.dot(1 - target, np.log(1 - prediction))
 
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
-
-def net_input(theta, x):
-    return np.dot(x, theta)
-
-def probability(theta, x):
-    return sigmoid(net_input(theta, x))
 
 def graph(data, target):
     for i in range(len(target)):
@@ -43,9 +33,11 @@ def graph_result(data, target, weight, bias):
             plt.scatter(data.iloc[i,0], data.iloc[i,1], color='red')
         else:
             plt.scatter(data.iloc[i,0], data.iloc[i,1], color='blue')
-    #plt.scatter(range(len(data.iloc[:,0])), target, color='red')
+
     y = - (bias + np.dot(weight[0], data.iloc[:,0])) / weight[1]
     plt.plot(data.iloc[:,0], y, color='green')
+    plt.xlabel(data.columns.values[0])
+    plt.ylabel(data.columns.values[1])
     plt.show()
     
 '''
@@ -64,18 +56,17 @@ def LRGradDesc(data, target, data_test, target_test, weight_init, bias_init, lea
         z = np.dot(data.iloc[:,0], current_weight[0]) + np.dot(data.iloc[:,1], current_weight[1]) + current_bias
         pred = sigmoid(z)
         diff = pred - target
-        #TODO: use correct cost function
+        
         cost = cross_entropy(pred, target)
-        log_cost = log_cross_entropy(z, target)
         current_weight[0] = current_weight[0] - ((learning_rate/N) * np.sum(data.iloc[:,0] * diff))
         current_weight[1] = current_weight[1] - ((learning_rate/N) * np.sum(data.iloc[:,1] * diff))
         current_bias = current_bias - ((learning_rate/N) * np.sum(diff))
 
-        train_accuracy = 1 - (np.sum(abs(diff)) / N)
-        test_accuracy = validate(data_test, target_test, current_weight, current_bias)
+        train_acc = 1 - (np.sum(abs(diff)) / N)
+        val_acc = validate(data_test, target_test, current_weight, current_bias)
 
-        if i % 200 == 0:
-           print("[Iteration " + str(i) + "] : " + str(cost) + ", " + str(log_cost) + ", " + str(test_accuracy))
+        if i % 1000 == 0:
+           print("[Iteration " + str(i) + "] : " + str(cost) + ", " + str(train_acc) + ", " + str(val_acc))
  
     return current_weight, current_bias
 
@@ -95,10 +86,10 @@ if __name__ == "__main__":
 
     # get file data
     data_file = pd.read_csv("data-sets/diabetes.csv")
-    X = data_file.iloc[1:,:8] # Features
-    y = data_file.iloc[1:,8] # Target variable
+    shuffled_data = data_file.sample(frac=1)
+    X = shuffled_data.iloc[1:,:8] # Features
+    y = shuffled_data.iloc[1:,8] # Target variable
 
-    # TODO: must be a randomized selection
     # spltting train and test data
     split_index = int(math.floor(len(y) * 0.8))
     X_train, X_test = X.iloc[:split_index], X.iloc[split_index:]
@@ -108,5 +99,6 @@ if __name__ == "__main__":
     key_features = feature_selection(X_train, y_train)
 
     # train model
-    weight, bias = LRGradDesc(X_train.iloc[:, [key_features[0], key_features[1]]], y_train, X_test.iloc[:, [key_features[0], key_features[1]]], y_test, 0, -10, 0.001, 2000)
-    graph_result(X_test, y_test, weight, bias)
+    weight, bias = LRGradDesc(X_train.iloc[:, [key_features[0], key_features[1]]], y_train, X_test.iloc[:, [key_features[0], key_features[1]]], y_test, 0, -10, 0.001, 10000)
+    print("Final weights: " + str(bias) + ", " + str(weight[0]) + ", " + str(weight[1]))
+    graph_result(X_test.iloc[:, [key_features[0], key_features[1]]], y_test, weight, bias)

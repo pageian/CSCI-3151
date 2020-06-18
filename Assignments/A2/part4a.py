@@ -3,6 +3,7 @@ from tensorflow.keras.datasets import cifar100
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
+import matplotlib.pyplot as plt
 
 def vectorize_sequences(sequences, dimension=10000):
     results = np.zeros((len(sequences), dimension))
@@ -29,26 +30,23 @@ if "__main__" == __name__:
     partial_y_train = one_hot_y_train[1000:]
 
     model = Sequential()
-    model.add(Dense(64, activation='relu', input_shape=(10000,)))
+    #TODO: input layer node count may be incorrect
+    model.add(Dense(100, activation='relu'))
     model.add(Dense(500, activation='relu'))
     model.add(Dense(200, activation='relu'))
-    model.add(Dense(46, activation='softmax'))
+    model.add(Dense(100, activation='softmax'))
 
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    result_data = []
-    for num_epochs in [20, 40, 60, 80, 100]:
-        history = model.fit(partial_X_train, partial_y_train, epochs=num_epochs, batch_size=512, validation_data=(X_val, y_val))
+    history = model.fit(partial_X_train, partial_y_train, epochs=100, batch_size=512, validation_data=(X_val, y_val))
 
-        loss = history.history['loss']
-        val_loss = history.history['val_loss']
-        acc = history.history['acc']
-        val_acc = history.history['val_acc']
+    loss = history.history['loss']
+    val_loss = history.history['val_loss']
+    acc = history.history['acc']
+    val_acc = history.history['val_acc']
 
-        result_data.append([num_epochs, loss[-1], val_loss[-1], acc[-1], val_acc[-1]])
-
-    plt.plot([item[0] for item in result_data], [item[1] for item in result_data], 'r', label='Training Loss')
-    plt.plot([item[0] for item in result_data], [item[2] for item in result_data], 'b', label='Validation Loss')
+    plt.plot(range(100), loss, 'r', label='Training Loss')
+    plt.plot(range(100), val_loss, 'b', label='Validation Loss')
     plt.title('Training Loss vs Validation Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
@@ -58,8 +56,8 @@ if "__main__" == __name__:
     plt.clf()
     acc = history.history['acc']
     val_acc = history.history['val_acc']
-    plt.plot([item[0] for item in result_data], [item[3] for item in result_data],'r',label='Training Accuracy')
-    plt.plot([item[0] for item in result_data], [item[4] for item in result_data], 'b', label='Validation Accuracy')
+    plt.plot(range(100), acc,'r',label='Training Accuracy')
+    plt.plot(range(100), val_acc, 'b', label='Validation Accuracy')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
