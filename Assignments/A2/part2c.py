@@ -1,11 +1,13 @@
 '''
-    Multi-class classifier w/ neural nets
+    Multi-class classifier w/ neural nets L2 and Dropout
 '''
 import numpy as np
 import pandas as pd
 from tensorflow.keras.datasets import reuters
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras import regularizers
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras import backend as K
 import matplotlib.pyplot as plt
@@ -16,13 +18,19 @@ def vectorize_sequences(sequences, dimension=10000):
         results[i,sequence] = 1
     return results
 
-def trainModel(X_train, y_train, X_val, y_val, hidden_layers = 3, hidden_nodes = 200, learning_rate = 0.001, epochs = 20):
+def trainModel(X_train, y_train, X_val, y_val, hidden_layers = 3, hidden_nodes = 200, learning_rate = 0.001, epochs = 20, l2=False, dropout=False):
 
     model = Sequential()
-    model.add(Dense(64, activation='relu', input_shape=(10000,)))
+    if dropout:
+        model.add(Dropout(0.1, input_shape=(10000,)))
+    else:
+        model.add(Dense(64, activation='relu', input_shape=(10000,)))
 
     for i in range(hidden_layers):
-        model.add(Dense(hidden_nodes, activation='relu'))
+        if l2:
+            model.add(Dense(hidden_nodes, activation='relu', kernel_regularizer=regularizers.l2()))
+        else:
+            model.add(Dense(hidden_nodes, activation='relu'))
 
     model.add(Dense(46, activation='softmax'))
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
@@ -52,16 +60,18 @@ if "__main__" == __name__:
     y_val = one_hot_y_train[:1000]
     partial_y_train = one_hot_y_train[1000:]
 
-    batch_sizes = [200, 400, 600, 800, 1000]
     color = ['b', 'r', 'y', 'g', 'o']
 
-    i = 0
-    for batch_size in batch_sizes:
 
-        loss_val = trainModel(partial_X_train, partial_y_train, X_val, y_val, 1, 100, 0.001, 40)
-        label = 'Batch Size = ' + str(batch_size)
-        plt.plot(range(1, 41), loss_val, color[i], label=label)
-        i += 1
+    loss_baseline = trainModel(partial_X_train, partial_y_train, X_val, y_val, 1, 100, 0.001, 40, False, False)
+    loss_dropout = trainModel(partial_X_train, partial_y_train, X_val, y_val, 1, 100, 0.001, 40, False, True)
+    loss_l2 = trainModel(partial_X_train, partial_y_train, X_val, y_val, 1, 100, 0.001, 40, True, False)
+    loss_both = trainModel(partial_X_train, partial_y_train, X_val, y_val, 1, 100, 0.001, 40, True, True)
+
+    plt.plot(range(1, 41), loss_baseline, 'b', label='Baseline')
+    plt.plot(range(1, 41), loss_dropout, 'r', label='Dropout')
+    plt.plot(range(1, 41), loss_l2, 'y', label='L2')
+    plt.plot(range(1, 41), loss_both, 'g', label='L2 and Dropout')
 
     plt.title('Training Loss vs Validation Loss')
     plt.xlabel('Epochs')
