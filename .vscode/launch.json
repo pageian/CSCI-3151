@@ -8,7 +8,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "part1d.py",
+            "program": "part4a.py",
             "cwd": "${workspaceFolder}/Assignments/A2",
             "console": "integratedTerminal"
         }
