@@ -8,8 +8,8 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "part4a.py",
-            "cwd": "${workspaceFolder}/Assignments/A2",
+            "program": "part2.py",
+            "cwd": "${workspaceFolder}/Assignments/A3",
             "console": "integratedTerminal"
         }
     ]
