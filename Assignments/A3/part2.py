@@ -24,39 +24,30 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = train_test_split(X.toarray(), y, test_size=0.2, random_state=0)
     tot_train = np.append(X_train, y_train[:,None], axis=1)
 
-
+    # train model
     gnb = GaussianNB()
     gnb.fit(X_train, y_train)
     y_pred = gnb.predict(X_test)
+   
+    print("P(Not Spam): " + str(gnb.class_prior_[0]))
+    print("P(Spam): " + str(gnb.class_prior_[1]) + "\n")
 
-    print("Number of mislabeled points out of a total %d points : %d"
-      % (X_test.shape[0], (y_test != y_pred).sum()))
-    print(gnb.class_prior_)
-    print(gnb.classes_)
-
-
+    # separating spam and non-spam instances
     not_spam = tot_train[np.where(tot_train[:, -1] == 0), :-1][0]
     spam = tot_train[np.where(tot_train[:, -1] == 1), :-1][0]
-    print("******************")
-    print(not_spam)
-    print(spam)
 
     # smoothing probs
     not_spam = not_spam + 1
     spam = spam + 1
     X_train_smooth = X_train + 1
 
-    print(not_spam)
-    print(spam)
-
-    print(len(spam[:,1]))
+    # calculating conditional prob elems
     feature_prob = (X_train_smooth.sum(axis=0)) / len(X_train[:,1])
-    print(len(feature_prob))
     feature_prob_spam = (spam.sum(axis=0) / len(spam[:,1]))
     feature_prob_not_spam = (not_spam.sum(axis=0) / len(not_spam[:,1]))
-    print(len(feature_prob_spam))
 
-
-    print(np.prod(feature_prob_not_spam))
-    print(np.prod(feature_prob))
-    print((np.prod(feature_prob_not_spam) * gnb.class_prior_[0]) / np.prod(feature_prob))
+    # printing results
+    print("P(Word | Not Spam): " + str(np.prod(feature_prob_not_spam)))
+    print("P(Word | Spam): " + str(np.prod(feature_prob_spam)) + "\n")
+    print("P(Not Spam | Word): " + str((np.prod(feature_prob_not_spam) * gnb.class_prior_[0]) / np.prod(feature_prob)))
+    print("P(Spam | Word): " + str((np.prod(feature_prob_spam) * gnb.class_prior_[1]) / np.prod(feature_prob)))
