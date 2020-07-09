@@ -15,7 +15,6 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Variable Definitions
 male_mu    = 5.3
@@ -31,8 +30,8 @@ male_pop = np.random.normal(male_mu, male_std, int(male_ratio * pop_count))
 female_pop = np.random.normal(female_mu, female_std, int(pop_count - (male_ratio * pop_count)))
 
 # Plot Data
-plt.hist(male_pop, density=False, color='b', label='Male')
-plt.hist(female_pop, density=False, color='r', label='Female')
+plt.hist(male_pop, density=False, color='b', alpha = 0.35, label='Male')
+plt.hist(female_pop, density=False, color='r', alpha = 0.35, label='Female')
 plt.legend()
 plt.xlabel('Million Cells / uL')
 plt.ylabel('Counts of Indiviuals')
