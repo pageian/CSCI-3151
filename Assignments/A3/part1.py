@@ -17,6 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Variable Definitions
 male_mu    = 5.3
 male_std   = 0.35
 female_mu  = 4.6
@@ -36,6 +37,4 @@ plt.legend()
 plt.xlabel('Million Cells / uL')
 plt.ylabel('Counts of Indiviuals')
 
-# TODO: Remove this if not going to plot line
-# plt.plot(bins, 1/(sigma * np.sqrt(2 * np.pi)) * np.exp( - (bins - mu)**2 / (2 * sigma**2) ), linewidth=3, color='y')
 plt.show()

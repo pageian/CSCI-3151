@@ -27,7 +27,7 @@ if __name__ == "__main__":
     plt.xlabel('n_components')
     plt.ylabel('BIC Score')
     plt.show()
-    print(BIC_scores.index(min(BIC_scores)) + 2)
+    print("Likely # of Races: " + str(BIC_scores.index(min(BIC_scores)) + 2))
     optimal_n = BIC_scores.index(min(BIC_scores)) + 2
 
     gmm = GMM(n_components=optimal_n).fit(X)
@@ -43,11 +43,9 @@ if __name__ == "__main__":
     cov = gmm.covariances_
     stds = [ np.sqrt(  np.trace(cov[i])/optimal_n) for i in range(0,optimal_n) ]
 
-    # print(means)
-    # print(cov)
     for i in range(0, optimal_n):
         print('**********')
         print('Alien Race: ' + str(i))
         print('Mean Height: ' + str(means[i][0]))
         print('Mean Weight: ' + str(means[i][1]))
-        print('Stan Dev: ' + str(stds[i]))
+        print('Stan. Dev: ' + str(stds[i]))
