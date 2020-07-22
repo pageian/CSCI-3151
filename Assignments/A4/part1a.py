@@ -34,8 +34,8 @@ for i in inits:
     adj_title = i + ": adjust rand index"
     sil_clr = clrs[clr_i]
     adj_clr = clrs[clr_i + 1]
-    plt.plot(range(k_min, k_max), silhouette_avgs, c=sil_clr, label='silhouette score')
-    plt.plot(range(k_min, k_max), adjusted_rand, c=adj_clr, label='adjust rand index')
+    plt.plot(range(k_min, k_max), silhouette_avgs, c=sil_clr, label=sil_title)
+    plt.plot(range(k_min, k_max), adjusted_rand, c=adj_clr, label=adj_title)
     silhouette_avgs = []
     adjusted_rand = []
     clr_i += 2
