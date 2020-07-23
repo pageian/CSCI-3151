@@ -36,6 +36,7 @@ if "__main__" == __name__:
     X_train = X_train / 255
     X_test = X_test / 255
 
+    print('Part A')
     num_nodes_results = []
     for i in num_nodes:
         # Create the model
@@ -64,7 +65,8 @@ if "__main__" == __name__:
         score = model.evaluate(X_test, y_test, verbose=0)
         num_nodes_results.append(score[1])
         print("### Num Nodes: " + str(i) + " ###")
-        print(f'Test loss: {score[0]} / Test accuracy: {score[1]}')
+        print(f'Test loss: {score[0]}')
+        print(f'Test accuracy: {score[1]}\n')
 
     best_node_num = num_nodes[num_nodes_results.index(max(num_nodes_results))]
     print("\nBest Node Selection: " + str(best_node_num))
@@ -97,6 +99,7 @@ if "__main__" == __name__:
     val_acc = history_relu.history['val_acc']
     plt.plot(range(len(acc)), acc,'r',label='Training Accuracy')
     plt.plot(range(len(val_acc)), val_acc, 'b', label='Validation Accuracy')
+    plt.title('Part A')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
@@ -107,6 +110,7 @@ if "__main__" == __name__:
     val_loss = history_relu.history['val_loss']
     plt.plot(range(len(loss)), loss,'y',label='Training Loss')
     plt.plot(range(len(val_loss)), val_loss, 'g', label='Validation Loss')
+    plt.title('Part A')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
@@ -117,7 +121,6 @@ if "__main__" == __name__:
     # Exponential activation
     # Use most ideal epoch
     # Create the model
-    print("### Exponential ###")
     model_exp = Sequential()
     model_exp.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
     model_exp.add(Flatten())
@@ -142,7 +145,6 @@ if "__main__" == __name__:
     # Sigmoid activation
     # Use most ideal epoch
     # Create the model
-    print("### Sigmoid ###")
     model_sigmoid = Sequential()
     model_sigmoid.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
     model_sigmoid.add(Flatten())
@@ -170,6 +172,7 @@ if "__main__" == __name__:
     plt.plot(range(len(relu_acc)), relu_acc,'r',label='Relu')
     plt.plot(range(len(exp_acc)), exp_acc, 'b', label='Exponential')
     plt.plot(range(len(sigmoid_acc)), sigmoid_acc, 'g', label='Sigmoid')
+    plt.title('Part B')
     plt.xlabel('Epochs')
     plt.ylabel('Val. Accuracy')
     plt.legend()
@@ -193,6 +196,7 @@ if "__main__" == __name__:
 
     max_acc = class_acc.argmax(axis=0)
     min_acc = class_acc.argmin(axis=0)
-    print("Max Accuracy class #: " + str(max_acc) + " - " + str(class_acc[max_acc]))
-    print("Min Accuracy class #: " + str(min_acc) + " - " + str(class_acc[min_acc]))
+    print('Part C')
+    print("Max Accuracy class #: " + str(max_acc) + " - " + str(class_acc[max_acc]) * 100) + "%"
+    print("Min Accuracy class #: " + str(min_acc) + " - " + str(class_acc[min_acc]) * 100) + "%"
 
