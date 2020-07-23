@@ -74,49 +74,51 @@ if "__main__" == __name__:
 
     # Find most ideal epoch
     # Create the model
-    model_relu = Sequential()
-    model_relu.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
-    model_relu.add(Flatten())
-    model_relu.add(Dense(best_node_num, activation='relu'))
-    model_relu.add(Dense(best_node_num, activation='relu'))
-    model_relu.add(Dense(no_classes, activation='softmax'))
+    model_softmax = Sequential()
+    model_softmax.add(Conv2D(32, kernel_size=(3, 3), activation='relu', input_shape=input_shape))
+    model_softmax.add(Flatten())
+    model_softmax.add(Dense(best_node_num, activation='relu'))
+    model_softmax.add(Dense(best_node_num, activation='relu'))
+    model_softmax.add(Dense(no_classes, activation='softmax'))
 
     # Compile the model
-    model_relu.compile(loss=loss_function,
+    model_softmax.compile(loss=loss_function,
                 optimizer=optimizer,
                 metrics=['accuracy'])
 
     # Fit data to model
-    history_relu = model_relu.fit(X_train, y_train,
+    history_softmax = model_softmax.fit(X_train, y_train,
             batch_size=batch_size,
             epochs=no_epochs,
             verbose=verbosity,
             validation_split=validation_split)
-    pred_relu = np.argmax(model_relu.predict(X_test), axis=1)
+    pred_softmax = np.argmax(model_softmax.predict(X_test), axis=1)
 
     plt.clf()
-    acc = history_relu.history['acc']
-    val_acc = history_relu.history['val_acc']
+    acc = history_softmax.history['acc']
+    val_acc = history_softmax.history['val_acc']
     plt.plot(range(len(acc)), acc,'r',label='Training Accuracy')
     plt.plot(range(len(val_acc)), val_acc, 'b', label='Validation Accuracy')
-    plt.title('Part A')
+    plt.title('Part B')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
     plt.show()
 
     plt.clf()
-    loss = history_relu.history['loss']
-    val_loss = history_relu.history['val_loss']
+    loss = history_softmax.history['loss']
+    val_loss = history_softmax.history['val_loss']
     plt.plot(range(len(loss)), loss,'y',label='Training Loss')
     plt.plot(range(len(val_loss)), val_loss, 'g', label='Validation Loss')
-    plt.title('Part A')
+    plt.title('Part B')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
     plt.show()
 
-    best_epoch_num = history_relu.history['val_acc'].index(max(history_relu.history['val_acc'])) + 1
+    best_epoch_num = history_softmax.history['val_acc'].index(max(history_softmax.history['val_acc'])) + 1
+
+    print("Best # of Epochs: " + str(best_epoch_num))
 
     # Exponential activation
     # Use most ideal epoch
@@ -166,25 +168,25 @@ if "__main__" == __name__:
     pred_sigmoid = np.argmax(model_sigmoid.predict(X_test), axis=1)
 
     plt.clf()
-    relu_acc = history_relu.history['val_acc']
+    softmax_acc = history_softmax.history['val_acc']
     exp_acc = history_exp.history['val_acc']
     sigmoid_acc = history_sigmoid.history['val_acc']
-    plt.plot(range(len(relu_acc)), relu_acc,'r',label='Relu')
+    plt.plot(range(len(softmax_acc)), softmax_acc,'r',label='Softmax')
     plt.plot(range(len(exp_acc)), exp_acc, 'b', label='Exponential')
     plt.plot(range(len(sigmoid_acc)), sigmoid_acc, 'g', label='Sigmoid')
-    plt.title('Part B')
+    plt.title('Part C')
     plt.xlabel('Epochs')
     plt.ylabel('Val. Accuracy')
     plt.legend()
     plt.show()
 
-    max_relu_acc = max(history_relu.history['val_acc'])
+    max_relu_acc = max(history_softmax.history['val_acc'])
     max_exp_acc = max(history_exp.history['val_acc'])
     max_sigmoid_acc = max(history_sigmoid.history['val_acc'])
 
     fin_pred = []
     if(max_relu_acc >= max_exp_acc and max_relu_acc >= max_sigmoid_acc):
-            fin_pred = pred_relu   
+            fin_pred = pred_softmax   
     elif(max_exp_acc >= max_relu_acc and max_exp_acc >= max_sigmoid_acc):
             fin_pred = pred_exp  
     else:
@@ -196,7 +198,7 @@ if "__main__" == __name__:
 
     max_acc = class_acc.argmax(axis=0)
     min_acc = class_acc.argmin(axis=0)
-    print('Part C')
-    print("Max Accuracy class #: " + str(max_acc) + " - " + str(class_acc[max_acc]) * 100) + "%"
-    print("Min Accuracy class #: " + str(min_acc) + " - " + str(class_acc[min_acc]) * 100) + "%"
+    print('Part D')
+    print("Max Accuracy class #: " + str(max_acc) + " - " + str(class_acc[max_acc]))
+    print("Min Accuracy class #: " + str(min_acc) + " - " + str(class_acc[min_acc]))
 
